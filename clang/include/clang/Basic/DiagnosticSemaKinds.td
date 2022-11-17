@@ -17,6 +17,12 @@ def note_entity_declared_at : Note<"%0 declared here">;
 def note_callee_decl : Note<"%0 declared here">;
 def note_defined_here : Note<"%0 defined here">;
 
+//Autosar
+def warn_no_magic_lits : Warning<
+  "Autosar[A5-1-1]: Use symbolic names instead of "
+                                "literal values in code.">,
+  InGroup<Autosar>, DefaultIgnore;
+
 // For loop analysis
 def warn_variables_not_in_loop_body : Warning<
   "variable%select{s| %1|s %1 and %2|s %1, %2, and %3|s %1, %2, %3, and %4}0 "

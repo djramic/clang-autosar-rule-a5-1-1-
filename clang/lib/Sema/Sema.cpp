@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "UsedDeclVisitor.h"
+#include "clang/Analysis/FindMagicLits.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/ASTDiagnostic.h"
 #include "clang/AST/Decl.h"
@@ -49,6 +50,7 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/Support/TimeProfiler.h"
+#include <vector>
 
 using namespace clang;
 using namespace sema;
@@ -1431,6 +1433,16 @@ void Sema::ActOnEndOfTranslationUnit() {
 
   if (!PP.isIncrementalProcessingEnabled())
     TUScope = nullptr;
+
+  if(!Diags.isIgnored(diag::warn_no_magic_lits, SourceLocation())){
+    FindMagicLits1 Visitor(&Context);
+    Visitor.TraverseDecl(Context.getTranslationUnitDecl());
+    std::vector<FullSourceLoc> warningsLocs = Visitor.getWarnings();
+    for(FullSourceLoc warn : warningsLocs){
+        if(warn.isValid())
+          Diag(static_cast<SourceLocation>(warn), diag::warn_no_magic_lits)<<static_cast<SourceRange>(warn);
+    }
+  }
 }
 
 

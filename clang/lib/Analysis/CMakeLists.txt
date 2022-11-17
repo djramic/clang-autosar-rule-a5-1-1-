@@ -18,6 +18,7 @@ add_clang_library(clangAnalysis
   CodeInjector.cpp
   Dominators.cpp
   ExprMutationAnalyzer.cpp
+  FindMagicLits.cpp
   IssueHash.cpp
   LiveVariables.cpp
   MacroExpansionContext.cpp

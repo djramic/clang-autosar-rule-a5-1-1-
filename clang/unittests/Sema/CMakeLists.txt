@@ -8,6 +8,7 @@ add_clang_unittest(SemaTests
   CodeCompleteTest.cpp
   GslOwnerPointerInference.cpp
   SemaLookupTest.cpp
+  AutosarTest.cpp
   )
 
 clang_target_link_libraries(SemaTests

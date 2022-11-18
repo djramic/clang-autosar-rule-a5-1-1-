@@ -22,6 +22,7 @@ add_clang_library(clangAnalysis
   IssueHash.cpp
   LiveVariables.cpp
   MacroExpansionContext.cpp
+  MagicLitsMch.cpp
   ObjCNoReturn.cpp
   PathDiagnostic.cpp
   PostOrderCFGView.cpp

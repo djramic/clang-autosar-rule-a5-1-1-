@@ -44,6 +44,7 @@ add_clang_library(clangStaticAnalyzerCheckers
   ErrnoModeling.cpp
   ErrnoTesterChecker.cpp
   ExprInspectionChecker.cpp
+  FindMagicLits.cpp
   FixedAddressChecker.cpp
   FuchsiaHandleChecker.cpp
   GCDAntipatternChecker.cpp
@@ -61,6 +62,7 @@ add_clang_library(clangStaticAnalyzerCheckers
   LocalizationChecker.cpp
   MacOSKeychainAPIChecker.cpp
   MacOSXAPIChecker.cpp
+  MagicLitsMch.cpp
   MallocChecker.cpp
   MallocOverflowSecurityChecker.cpp
   MallocSizeofChecker.cpp

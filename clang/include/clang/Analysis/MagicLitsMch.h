@@ -55,14 +55,8 @@ public:
     DynTypedNode parent = parents[0];
     if(CheckLiteral(parent) == non_compliant){
         if(!diagIgnore(Literal->getBeginLoc())){
-            //warnings.push_back(Context->getFullLoc(Literal->getBeginLoc()));
-    clang::DiagnosticsEngine &DE = Context->getDiagnostics();
-    const auto ID = DE.getCustomDiagID(clang::DiagnosticsEngine::Warning,
-                                   "Autosar[A5-1-1]: Use symbolic names instead of "
-                                   "literal values in code.");
-    auto DB = DE.Report(Literal->getBeginLoc(), ID);
-    auto Range = Context->getSourceManager().getExpansionRange(Literal->getBeginLoc());
-    DB.AddSourceRange(Range);
+          warnings.push_back(Context->getFullLoc(Literal->getBeginLoc()));
+  
     }
   }
   return true;
@@ -154,7 +148,6 @@ std::pair<size_t, size_t> getLineStartAndEnd(StringRef Buffer,
 bool lineHasIgnore(StringRef Buffer, std::pair<size_t, size_t> LineStartAndEnd){
   Buffer = Buffer.slice(LineStartAndEnd.first, LineStartAndEnd.second);
   std::string Buffer1 = removeSpace(Buffer);
-  llvm::outs() << "Final buffer : \n" << Buffer1;
   static constexpr llvm::StringLiteral IGNORE = "//ignore:autosar[a5-1-1]";
   if(Buffer1.find(IGNORE)!= StringRef::npos)
     return true;

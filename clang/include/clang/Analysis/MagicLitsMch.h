@@ -13,6 +13,7 @@ using namespace llvm;
 using namespace clang;
 using namespace clang::tooling;
 using namespace clang::ast_matchers;
+using namespace ento;
 
 StatementMatcher LitMatcher[] = {
   integerLiteral().bind("IntLiteral"),

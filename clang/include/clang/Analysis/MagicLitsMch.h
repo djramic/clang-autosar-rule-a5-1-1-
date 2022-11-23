@@ -13,7 +13,6 @@ using namespace llvm;
 using namespace clang;
 using namespace clang::tooling;
 using namespace clang::ast_matchers;
-using namespace ento;
 
 StatementMatcher LitMatcher[] = {
   integerLiteral().bind("IntLiteral"),
@@ -163,10 +162,6 @@ std::string removeSpace(StringRef buffer){
     elem = tolower(elem);
   }
   return buf;
-}
-
-ASTContext* getContext(){
-    return Context;
 }
 
 private:

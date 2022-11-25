@@ -11,12 +11,15 @@
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include <vector>
 
-namespace {
+
+using namespace clang;
+using namespace ento;
+
 class MagicLitsMchChecker : public Checker<check::ASTCodeBody> {
 public:
   void checkASTCodeBody(const Decl *D, AnalysisManager &Mgr,
                         BugReporter &BR) const{
-    FindMagicLits Printer;
+    FindMagicLits Printer(&Mgr.getASTContext());
     MatchFinder Finder;
     for(StatementMatcher LM : LitMatcher)
         Finder.addMatcher(LM, &Printer);
@@ -30,7 +33,6 @@ public:
     }
   }
 };
-} 
 
 void ento::registerMagicLitsMchChecker(CheckerManager &mgr) {
   mgr.registerChecker<MagicLitsMchChecker>();

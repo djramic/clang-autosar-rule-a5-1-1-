@@ -19,7 +19,7 @@ static llvm::cl::OptionCategory MyToolCategory("my-tool options");
 
 class FindMagicLitsConsumer : public clang::ASTConsumer {
 public:
-  FindMagicLitsConsumer(ASTContext *Context){
+  FindMagicLitsConsumer(ASTContext *Context) : Matcher(Context){
     for(StatementMatcher LM : LitMatcher)
       Finder.addMatcher(LM, &Matcher);
   }
@@ -45,7 +45,7 @@ private:
 class FindMagicLitsAction : public clang::ASTFrontendAction {
 public:
   virtual std::unique_ptr<clang::ASTConsumer>
-  CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef InFile) {
+  CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef InFile){
     return std::make_unique<FindMagicLitsConsumer>(&Compiler.getASTContext());
   }
 };

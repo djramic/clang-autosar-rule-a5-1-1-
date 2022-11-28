@@ -11,8 +11,7 @@ using namespace clang;
 
 class CoreLogic {
 public:
-  CoreLogic(ASTContext *Context) 
-    : Context(Context) {}
+  explicit CoreLogic(ASTContext *Context) : Context(Context) {}
 
   template<typename T>
   bool CheckLiteral(T* Literal){

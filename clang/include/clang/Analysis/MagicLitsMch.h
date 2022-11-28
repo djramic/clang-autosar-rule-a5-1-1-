@@ -23,36 +23,27 @@ StatementMatcher LitMatcher[] = {
   cxxBoolLiteral().bind("boolLiteral")
 };
 
-class FindMagicLits : public MatchFinder::MatchCallback {
+class FindMagicLits : public MatchFinder::MatchCallback, public CoreLogic{
 public:
-  explicit FindMagicLits(ASTContext *Context) : CLG(Context) {}
-  virtual void run(const MatchFinder::MatchResult &Result){
+  explicit FindMagicLits(ASTContext *Context) : CoreLogic(Context){}
+  virtual void run(const MatchFinder::MatchResult &Result) override{
     if (const IntegerLiteral *IL = Result.Nodes.getNodeAs<clang::IntegerLiteral>("IntLiteral")){
-      CLG.CheckLiteral(IL);  
+      CheckLiteral(IL);  
     }
     if (const FloatingLiteral *FL = Result.Nodes.getNodeAs<clang::FloatingLiteral>("FloatLiteral")){
-      CLG.CheckLiteral(FL);  
+      CheckLiteral(FL);  
     }
      if (const CXXNullPtrLiteralExpr *NPL = Result.Nodes.getNodeAs<clang::CXXNullPtrLiteralExpr>("NptLiteral")){
-      CLG.CheckLiteral(NPL);  
+      CheckLiteral(NPL);  
     }
      if (const clang::StringLiteral *SL = Result.Nodes.getNodeAs<clang::StringLiteral>("StrLiteral")){
-      CLG.CheckLiteral(SL);  
+      CheckLiteral(SL);  
     }
      if (const CharacterLiteral *CL = Result.Nodes.getNodeAs<clang::CharacterLiteral>("CharLiteral")){
-      CLG.CheckLiteral(CL);  
+      CheckLiteral(CL);  
     }
      if (const CXXBoolLiteralExpr *BL = Result.Nodes.getNodeAs<clang::CXXBoolLiteralExpr>("boolLiteral")){
-      CLG.CheckLiteral(BL);  
+      CheckLiteral(BL);  
     }
   }
-
-  const std::vector<FullSourceLoc> &getWarnings() const{
-    return CLG.getWarnings();
-  }
-
-private:
-  std::vector<FullSourceLoc> warnings;
-  ASTContext *Context;
-  CoreLogic CLG;
 };

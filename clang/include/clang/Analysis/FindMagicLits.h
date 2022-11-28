@@ -13,10 +13,9 @@ using namespace clang;
 
 
 class FindMagicLits1
-    : public RecursiveASTVisitor<FindMagicLits1> {
+    : public RecursiveASTVisitor<FindMagicLits1>, public CoreLogic {
 public:
-  explicit FindMagicLits1(clang::ASTContext *Context)
-    : CLG(Context){}
+  explicit FindMagicLits1(clang::ASTContext *Context) : CoreLogic(Context){}
 
   bool VisitIntegerLiteral(IntegerLiteral *Literal);
 
@@ -29,11 +28,4 @@ public:
   bool VisitCharacterLiteral(CharacterLiteral *Literal);
 
   bool VisitCXXBoolLiteralExpr(CXXBoolLiteralExpr *Literal);
-
-  const std::vector<FullSourceLoc> &getWarnings() const;
-
-private:
-  CoreLogic CLG;
-  std::vector<FullSourceLoc> warnings;
-
 };

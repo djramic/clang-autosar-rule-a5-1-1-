@@ -1,3 +1,5 @@
+#ifndef FIND_MAGIC_LITS_H
+#define FIND_MAGIC_LITS_H 
 #include "clang/Frontend/FrontendActions.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
@@ -127,3 +129,4 @@ public:
     ASTContext *Context;
     std::vector<FullSourceLoc> warnings;
 };
+#endif //FIND_MAGIC_LITS_H

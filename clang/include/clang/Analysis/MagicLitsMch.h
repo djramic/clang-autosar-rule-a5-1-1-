@@ -1,3 +1,5 @@
+#ifndef MAGIC_LITS_MCH
+#define MAGIC_LITS_MCH 
 #include "clang/Frontend/FrontendActions.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
@@ -47,3 +49,5 @@ public:
     }
   }
 };
+
+#endif //MAGIC_LITS_MCH

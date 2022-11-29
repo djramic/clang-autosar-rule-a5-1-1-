@@ -4,6 +4,7 @@
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/AST/ParentMapContext.h"
 #include "clang/Analysis/MagicLitsVisitor.h"
+#include "clang/Analysis/MagicLitsMch.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
@@ -15,12 +16,24 @@ using namespace ento;
 
 class FindMagicLitsChecker : public Checker<check::ASTCodeBody> {
 public:
+  bool usingMatcher = false;
   void checkASTCodeBody(const Decl *D, AnalysisManager &Mgr,
                         BugReporter &BR) const {
     ASTContext &Context = Mgr.getAnalysisDeclContext(D)->getASTContext();
-    MagicLitsVisitor Visitor(&Context);
-    Visitor.TraverseDecl(const_cast<Decl *>(D));
-    std::vector<FullSourceLoc> warningsLocs = Visitor.getWarnings();
+    std::vector<FullSourceLoc> warningsLocs;
+    if(usingMatcher){
+      MagicLitsMch Printer(&Mgr.getASTContext());
+      MatchFinder Finder;
+      for(StatementMatcher LM : LitMatcher)
+        Finder.addMatcher(LM, &Printer);
+      Finder.matchAST(Mgr.getASTContext());
+      warningsLocs = Printer.getWarnings();
+    }
+    else{
+      MagicLitsVisitor Visitor(&Context);
+      Visitor.TraverseDecl(const_cast<Decl *>(D));
+      warningsLocs = Visitor.getWarnings();
+    }
     for(FullSourceLoc FL : warningsLocs){
       BR.EmitBasicReport(D, this, "Autosar a5-1-1 rule", categories::LogicError,
                       "Autosar[A5-1-1]: Use symbolic names instead of "
@@ -32,7 +45,9 @@ public:
 
 
 void ento::registerFindMagicLitsChecker(CheckerManager &mgr) {
-  mgr.registerChecker<FindMagicLitsChecker>();
+  auto *Chk =  mgr.registerChecker<FindMagicLitsChecker>();
+  const AnalyzerOptions &Opts = mgr.getAnalyzerOptions();
+  Chk->usingMatcher = Opts.getCheckerBooleanOption(Chk, "usingMatcher");
 }
 
 bool ento::shouldRegisterFindMagicLitsChecker(const CheckerManager &mgr) {

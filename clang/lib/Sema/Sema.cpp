@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "UsedDeclVisitor.h"
-#include "clang/Analysis/FindMagicLits.h"
+#include "clang/Analysis/MagicLitsVisitor.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/ASTDiagnostic.h"
 #include "clang/AST/Decl.h"
@@ -1435,7 +1435,7 @@ void Sema::ActOnEndOfTranslationUnit() {
     TUScope = nullptr;
 
   if(!Diags.isIgnored(diag::warn_no_magic_lits, SourceLocation())){
-    FindMagicLits1 Visitor(&Context);
+    MagicLitsVisitor Visitor(&Context);
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
     std::vector<FullSourceLoc> warningsLocs = Visitor.getWarnings();
     for(FullSourceLoc warn : warningsLocs){

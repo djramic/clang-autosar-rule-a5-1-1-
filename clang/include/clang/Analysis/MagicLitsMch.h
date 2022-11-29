@@ -5,7 +5,7 @@
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/AST/ASTContext.h"
-#include "clang/Analysis/Core.h"
+#include "clang/Analysis/FindMagicLits.h"
 #include <vector>
 
 
@@ -23,9 +23,9 @@ StatementMatcher LitMatcher[] = {
   cxxBoolLiteral().bind("boolLiteral")
 };
 
-class FindMagicLits : public MatchFinder::MatchCallback, public CoreLogic{
+class MagicLitsMch : public MatchFinder::MatchCallback, public FindMagicLits{
 public:
-  explicit FindMagicLits(ASTContext *Context) : CoreLogic(Context){}
+  explicit MagicLitsMch(ASTContext *Context) : FindMagicLits(Context){}
   virtual void run(const MatchFinder::MatchResult &Result) override{
     if (const IntegerLiteral *IL = Result.Nodes.getNodeAs<clang::IntegerLiteral>("IntLiteral")){
       CheckLiteral(IL);  

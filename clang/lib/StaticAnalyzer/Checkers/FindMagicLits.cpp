@@ -3,7 +3,7 @@
 #include "clang/AST/Stmt.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/AST/ParentMapContext.h"
-#include "clang/Analysis/FindMagicLits.h"
+#include "clang/Analysis/MagicLitsVisitor.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
@@ -18,7 +18,7 @@ public:
   void checkASTCodeBody(const Decl *D, AnalysisManager &Mgr,
                         BugReporter &BR) const {
     ASTContext &Context = Mgr.getAnalysisDeclContext(D)->getASTContext();
-    FindMagicLits1 Visitor(&Context);
+    MagicLitsVisitor Visitor(&Context);
     Visitor.TraverseDecl(const_cast<Decl *>(D));
     std::vector<FullSourceLoc> warningsLocs = Visitor.getWarnings();
     for(FullSourceLoc FL : warningsLocs){

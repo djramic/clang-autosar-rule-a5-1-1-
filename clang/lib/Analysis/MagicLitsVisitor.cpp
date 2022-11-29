@@ -1,30 +1,30 @@
-#include "clang/Analysis/FindMagicLits.h"
+#include "clang/Analysis/MagicLitsVisitor.h"
 #include "clang/Basic/Diagnostic.h"
 
 
-bool FindMagicLits1::VisitIntegerLiteral(IntegerLiteral* Literal){
+bool MagicLitsVisitor::VisitIntegerLiteral(IntegerLiteral* Literal){
   if(Literal->getLocation().isMacroID()){
     return true;
   }
   return CheckLiteral(Literal);
 }
 
-bool FindMagicLits1::VisitFloatingLiteral(FloatingLiteral *Literal) {
+bool MagicLitsVisitor::VisitFloatingLiteral(FloatingLiteral *Literal) {
   if(Literal->getLocation().isMacroID()){
     return true;
   }
   return CheckLiteral(Literal);
 }
 
-bool FindMagicLits1::VisitCXXNullPtrLiteralExpr(CXXNullPtrLiteralExpr *Literal){
+bool MagicLitsVisitor::VisitCXXNullPtrLiteralExpr(CXXNullPtrLiteralExpr *Literal){
   return CheckLiteral(Literal);
 }
 
-bool FindMagicLits1::VisitStringLiteral(StringLiteral *Literal) {
+bool MagicLitsVisitor::VisitStringLiteral(StringLiteral *Literal) {
   return CheckLiteral(Literal);
 }
 
-bool FindMagicLits1::VisitCharacterLiteral(CharacterLiteral *Literal) {
+bool MagicLitsVisitor::VisitCharacterLiteral(CharacterLiteral *Literal) {
   constexpr char EscapeSequences[] = {
       '\b', '\f', '\n', '\r', '\t', '\v', '\\', '\'', '\"', '\?', '\0'
   };
@@ -33,6 +33,6 @@ bool FindMagicLits1::VisitCharacterLiteral(CharacterLiteral *Literal) {
   return CheckLiteral(Literal);
 }
 
-bool FindMagicLits1::VisitCXXBoolLiteralExpr(CXXBoolLiteralExpr *Literal){
+bool MagicLitsVisitor::VisitCXXBoolLiteralExpr(CXXBoolLiteralExpr *Literal){
   return CheckLiteral(Literal);
 }

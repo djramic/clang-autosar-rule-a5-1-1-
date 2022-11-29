@@ -1,7 +1,7 @@
 #include "clang/AST/Stmt.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/RecursiveASTVisitor.h"
-#include "clang/Analysis/FindMagicLits.h"
+#include "clang/Analysis/MagicLitsVisitor.h"
 #include "clang/Basic/Diagnostic.h"
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
@@ -36,7 +36,7 @@ public:
     }
  }
 private:
-  FindMagicLits1 Visitor;
+  MagicLitsVisitor Visitor;
   std::vector<FullSourceLoc> Warnings;
 };
 

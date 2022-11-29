@@ -38,7 +38,7 @@ public:
     }
   }
 private:
-  FindMagicLits Matcher;
+  MagicLitsMch Matcher;
   MatchFinder Finder;
  };
 

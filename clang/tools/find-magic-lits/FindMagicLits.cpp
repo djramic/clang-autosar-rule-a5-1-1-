@@ -2,6 +2,7 @@
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Analysis/MagicLitsVisitor.h"
+#include "clang/Analysis/MagicLitsMch.h"
 #include "clang/Basic/Diagnostic.h"
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
@@ -18,13 +19,30 @@ using namespace clang;
 using namespace clang::tooling;
 using namespace llvm;
 
+
+static llvm::cl::OptionCategory MyToolCategory("find-magic-lits options");
+bool useMchOpt = false;
+
 class FindMagicLitsConsumer : public clang::ASTConsumer {
 public:
-  explicit FindMagicLitsConsumer(ASTContext *Context) : Visitor(Context) {}
+  explicit FindMagicLitsConsumer(ASTContext *Context){}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context){
-    Visitor.TraverseDecl(Context.getTranslationUnitDecl()); 
-    Warnings = Visitor.getWarnings();
+    if(useMchOpt){
+      MagicLitsMch Matcher(&Context);
+      MatchFinder Finder;
+      for(StatementMatcher LM : LitMatcher)
+        Finder.addMatcher(LM, &Matcher);
+      Finder.matchAST(Context);
+      std::vector<FullSourceLoc> Warnings = Matcher.getWarnings();
+    }
+
+    else{
+      MagicLitsVisitor Visitor(&Context);
+      Visitor.TraverseDecl(Context.getTranslationUnitDecl()); 
+      Warnings = Visitor.getWarnings();
+    }
+    
     clang::DiagnosticsEngine &DE = Context.getDiagnostics();
     const auto ID = DE.getCustomDiagID(clang::DiagnosticsEngine::Warning,
                                    "Autosar[A5-1-1]: Use symbolic names instead of "
@@ -36,7 +54,6 @@ public:
     }
  }
 private:
-  MagicLitsVisitor Visitor;
   std::vector<FullSourceLoc> Warnings;
 };
 
@@ -48,15 +65,18 @@ public:
   }
 };
 
-static llvm::cl::OptionCategory MyToolCategory("my-tool options");
-
 int main(int argc, const char **argv) {
+  cl::opt<bool> usingMatcher("useMatcher",
+                  cl::desc("Use matcher to search literals over the AST"),
+                  cl::cat(MyToolCategory));
+  useMchOpt =  usingMatcher.getValue();
+
   auto ExpectedParser = tooling::CommonOptionsParser::create(argc, argv, MyToolCategory);
   if (!ExpectedParser) {
     llvm::errs() << ExpectedParser.takeError();
     return 1;
   }
-  
+
   tooling::CommonOptionsParser& OptionsParser = ExpectedParser.get();
   tooling::ClangTool Tool(OptionsParser.getCompilations(),
                  OptionsParser.getSourcePathList());

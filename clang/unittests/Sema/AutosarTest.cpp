@@ -6,7 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 #include "clang/AST/ASTConsumer.h"
-#include "clang/Analysis/FindMagicLits.h"
+#include "clang/Analysis/MagicLitsVisitor.h"
+#include "clang/Analysis/MagicLitsMch.h"
 #include "clang/Frontend/TextDiagnostic.h"
 #include "clang/Frontend/FrontendAction.h"
 #include "clang/Frontend/CompilerInstance.h"
@@ -23,21 +24,33 @@ using namespace clang;
 
 class FindMagicLitsConsumer : public clang::ASTConsumer {
 public:
-  explicit FindMagicLitsConsumer(ASTContext *Context, std::vector<int> ExpWarnings ) : Visitor(Context), ExpWarningsLines(ExpWarnings) {}
+  explicit FindMagicLitsConsumer(ASTContext *Context, std::vector<int> ExpWarnings ) : ExpWarningsLines(ExpWarnings) {}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context){
     
+    MagicLitsVisitor Visitor(&Context);
     Visitor.TraverseDecl(Context.getTranslationUnitDecl()); 
     Warnings = Visitor.getWarnings();
    
     for(FullSourceLoc WL: Warnings){
-      llvm::outs()<< WL.getSpellingLineNumber();
       WarningsLines.push_back(WL.getSpellingLineNumber());
     }
-     EXPECT_TRUE(WarningsLines == ExpWarningsLines);
+    EXPECT_TRUE(WarningsLines == ExpWarningsLines);
+
+    WarningsLines.clear();
+
+    MagicLitsMch Matcher(&Context);
+    MatchFinder Finder;
+    for(StatementMatcher LM : LitMatcher)
+      Finder.addMatcher(LM, &Matcher);
+    Finder.matchAST(Context);
+    Warnings = Matcher.getWarnings();
+    for(FullSourceLoc WL: Warnings){
+      WarningsLines.push_back(WL.getSpellingLineNumber());
+    }
+    EXPECT_TRUE(WarningsLines == ExpWarningsLines);
  }
 private:
-  FindMagicLits1 Visitor;
   std::vector<FullSourceLoc> Warnings;
   std::vector<int>WarningsLines;
   std::vector<int>ExpWarningsLines;

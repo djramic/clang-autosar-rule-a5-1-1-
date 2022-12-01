@@ -19,7 +19,6 @@ using namespace clang;
 using namespace clang::tooling;
 using namespace llvm;
 
-
 static llvm::cl::OptionCategory MyToolCategory("find-magic-lits options");
 bool useMchOpt = false;
 
@@ -34,7 +33,7 @@ public:
       for(StatementMatcher LM : LitMatcher)
         Finder.addMatcher(LM, &Matcher);
       Finder.matchAST(Context);
-      std::vector<FullSourceLoc> Warnings = Matcher.getWarnings();
+      Warnings = Matcher.getWarnings();
     }
 
     else{
@@ -69,13 +68,15 @@ int main(int argc, const char **argv) {
   cl::opt<bool> usingMatcher("useMatcher",
                   cl::desc("Use matcher to search literals over the AST"),
                   cl::cat(MyToolCategory));
-  useMchOpt =  usingMatcher.getValue();
-
+                  
   auto ExpectedParser = tooling::CommonOptionsParser::create(argc, argv, MyToolCategory);
   if (!ExpectedParser) {
     llvm::errs() << ExpectedParser.takeError();
     return 1;
   }
+
+  useMchOpt =  usingMatcher.getValue();
+  llvm::outs() << "Use matcher option  : " << useMchOpt << "\n"; 
 
   tooling::CommonOptionsParser& OptionsParser = ExpectedParser.get();
   tooling::ClangTool Tool(OptionsParser.getCompilations(),

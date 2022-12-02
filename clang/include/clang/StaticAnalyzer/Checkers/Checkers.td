@@ -502,11 +502,6 @@ let ParentPackage = Autosar in {
   HelpText<"Autosar[A5-1-1]: Literal values shall not be used apart from "
            "type initialization, otherwise symbolic names shall be used instead.">,
   Documentation<NotDocumented>;
-  //using AST matcher
-  def MagicLitsMchChecker : Checker<"MagicLitsMch">,
-  HelpText<"Autosar[A5-1-1]: Literal values shall not be used apart from [USING AST MATCHER] "
-           "type initialization, otherwise symbolic names shall be used instead.">,
-  Documentation<NotDocumented>;
 } // end "autosar"
 
 let ParentPackage = Unix in {

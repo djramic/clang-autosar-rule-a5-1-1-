@@ -17,15 +17,38 @@ class MagicLitsVisitor
 public:
   explicit MagicLitsVisitor(clang::ASTContext *Context) : FindMagicLits(Context){}
 
-  bool VisitIntegerLiteral(IntegerLiteral *Literal);
+  bool VisitIntegerLiteral(IntegerLiteral *Literal){
+    if(Literal->getLocation().isMacroID()){
+      return true;
+    } 
+    return CheckLiteral(Literal);
+  }
 
-  bool VisitFloatingLiteral(FloatingLiteral *Literal);
+  bool VisitFloatingLiteral(FloatingLiteral *Literal){
+    if(Literal->getLocation().isMacroID()){
+      return true;
+    } 
+    return CheckLiteral(Literal);
+  }
 
-  bool VisitCXXNullPtrLiteralExpr(CXXNullPtrLiteralExpr *Literal);
+  bool VisitCXXNullPtrLiteralExpr(CXXNullPtrLiteralExpr *Literal){
+    return CheckLiteral(Literal);
+  }
 
-  bool VisitStringLiteral(StringLiteral *Literal);
+  bool VisitStringLiteral(StringLiteral *Literal){
+    return CheckLiteral(Literal);
+  }
 
-  bool VisitCharacterLiteral(CharacterLiteral *Literal);
+  bool VisitCharacterLiteral(CharacterLiteral *Literal){
+    constexpr char EscapeSequences[] = {
+      '\b', '\f', '\n', '\r', '\t', '\v', '\\', '\'', '\"', '\?', '\0'
+    };
+    if(std::find(std::begin(EscapeSequences), std::end(EscapeSequences), Literal->getValue()) != std::end(EscapeSequences))
+      return true;
+    return CheckLiteral(Literal);
+  }
 
-  bool VisitCXXBoolLiteralExpr(CXXBoolLiteralExpr *Literal);
+  bool VisitCXXBoolLiteralExpr(CXXBoolLiteralExpr *Literal){
+     return CheckLiteral(Literal);
+  }
 };

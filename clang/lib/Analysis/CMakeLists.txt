@@ -18,11 +18,10 @@ add_clang_library(clangAnalysis
   CodeInjector.cpp
   Dominators.cpp
   ExprMutationAnalyzer.cpp
-  MagicLitsVisitor.cpp
+  FindMagicLits.cpp
   IssueHash.cpp
   LiveVariables.cpp
   MacroExpansionContext.cpp
-  MagicLitsMch.cpp
   ObjCNoReturn.cpp
   PathDiagnostic.cpp
   PostOrderCFGView.cpp

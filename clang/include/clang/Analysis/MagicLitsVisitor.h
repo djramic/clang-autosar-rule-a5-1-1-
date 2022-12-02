@@ -1,3 +1,5 @@
+#ifndef MAGIC_LITS_VISITOR_H
+#define MAGIC_LITS_VISITOR_H
 #include "clang/AST/Stmt.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/AST/ParentMapContext.h"
@@ -52,3 +54,4 @@ public:
      return CheckLiteral(Literal);
   }
 };
+#endif //MAGIC_LITS_VISITOR_H

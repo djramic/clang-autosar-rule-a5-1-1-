@@ -35,13 +35,11 @@ public:
       Finder.matchAST(Context);
       Warnings = Matcher.getWarnings();
     }
-
     else{
       MagicLitsVisitor Visitor(&Context);
       Visitor.TraverseDecl(Context.getTranslationUnitDecl()); 
       Warnings = Visitor.getWarnings();
     }
-    
     clang::DiagnosticsEngine &DE = Context.getDiagnostics();
     const auto ID = DE.getCustomDiagID(clang::DiagnosticsEngine::Warning,
                                    "Autosar[A5-1-1]: Use symbolic names instead of "
@@ -51,7 +49,7 @@ public:
       auto Range = Context.getSourceManager().getExpansionRange(WL);
       DB.AddSourceRange(Range);
     }
- }
+  }
 private:
   std::vector<FullSourceLoc> Warnings;
 };
@@ -65,7 +63,7 @@ public:
 };
 
 int main(int argc, const char **argv) {
-  cl::opt<bool> usingMatcher("useMatcher",
+  cl::opt<bool> useMatcher("useMatcher",
                   cl::desc("Use matcher to search literals over the AST"),
                   cl::cat(MyToolCategory));
                   
@@ -75,8 +73,7 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  useMchOpt =  usingMatcher.getValue();
-  llvm::outs() << "Use matcher option  : " << useMchOpt << "\n"; 
+  useMchOpt =  useMatcher.getValue();
 
   tooling::CommonOptionsParser& OptionsParser = ExpectedParser.get();
   tooling::ClangTool Tool(OptionsParser.getCompilations(),

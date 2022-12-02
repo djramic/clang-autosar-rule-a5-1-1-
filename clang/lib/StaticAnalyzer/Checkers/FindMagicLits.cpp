@@ -13,15 +13,14 @@
 using namespace clang;
 using namespace ento;
 
-
 class FindMagicLitsChecker : public Checker<check::ASTCodeBody> {
 public:
-  bool usingMatcher = false;
+  bool useMatcher = false;
   void checkASTCodeBody(const Decl *D, AnalysisManager &Mgr,
                         BugReporter &BR) const {
     ASTContext &Context = Mgr.getAnalysisDeclContext(D)->getASTContext();
     std::vector<FullSourceLoc> warningsLocs;
-    if(usingMatcher){
+    if(useMatcher){
       MagicLitsMch Printer(&Mgr.getASTContext());
       MatchFinder Finder;
       for(StatementMatcher LM : LitMatcher)
@@ -43,11 +42,10 @@ public:
   }
 };
 
-
 void ento::registerFindMagicLitsChecker(CheckerManager &mgr) {
   auto *Chk =  mgr.registerChecker<FindMagicLitsChecker>();
   const AnalyzerOptions &Opts = mgr.getAnalyzerOptions();
-  Chk->usingMatcher = Opts.getCheckerBooleanOption(Chk, "usingMatcher");
+  Chk->useMatcher = Opts.getCheckerBooleanOption(Chk, "useMatcher");
 }
 
 bool ento::shouldRegisterFindMagicLitsChecker(const CheckerManager &mgr) {

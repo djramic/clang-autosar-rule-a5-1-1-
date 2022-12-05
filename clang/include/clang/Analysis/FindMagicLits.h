@@ -14,7 +14,7 @@
 
 
 namespace clang{
-enum return_state {compliant, non_compliant, manual_check};
+enum return_state {compliant, non_compliant};
 
 class FindMagicLits {
 public:

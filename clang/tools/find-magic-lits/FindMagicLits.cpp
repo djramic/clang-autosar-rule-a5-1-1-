@@ -19,7 +19,7 @@ using namespace clang;
 using namespace clang::tooling;
 using namespace llvm;
 
-static llvm::cl::OptionCategory MyToolCategory("find-magic-lits options");
+static llvm::cl::OptionCategory FindMagicLitsOpts("find-magic-lits options");
 bool useMchOpt = false;
 
 class FindMagicLitsConsumer : public clang::ASTConsumer {
@@ -65,9 +65,9 @@ public:
 int main(int argc, const char **argv) {
   cl::opt<bool> useMatcher("useMatcher",
                   cl::desc("Use matcher to search literals over the AST"),
-                  cl::cat(MyToolCategory));
+                  cl::cat(FindMagicLitsOpts));
                   
-  auto ExpectedParser = tooling::CommonOptionsParser::create(argc, argv, MyToolCategory);
+  auto ExpectedParser = tooling::CommonOptionsParser::create(argc, argv, FindMagicLitsOpts);
   if (!ExpectedParser) {
     llvm::errs() << ExpectedParser.takeError();
     return 1;

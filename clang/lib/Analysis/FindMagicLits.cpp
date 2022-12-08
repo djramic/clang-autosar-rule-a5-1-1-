@@ -1,7 +1,7 @@
 #include "clang/Analysis/FindMagicLits.h"
 #include "clang/Basic/Diagnostic.h"
 
-return_state FindMagicLits1::CheckParents(DynTypedNode parent){
+return_state FindMagicLits::CheckParents(DynTypedNode parent){
   const Stmt* ST = parent.get<Stmt>();
   if(!ST){
     return compliant;
@@ -61,58 +61,7 @@ return_state FindMagicLits1::CheckParents(DynTypedNode parent){
   return compliant;
 }
 
-template<typename T> 
-bool FindMagicLits1::CheckLiteral(T *Literal){
-  const auto& parents = Context->getParents(*Literal);
-  DynTypedNode parent = parents[0];
-  if(CheckParents(parent) == non_compliant){
-    if(!diagIgnore(Literal->getBeginLoc())){
-      warnings.push_back(Context->getFullLoc(Literal->getBeginLoc()));
-    }
-  }
-  return true;
-}
-
-bool FindMagicLits1::VisitIntegerLiteral(IntegerLiteral* Literal){
-  if(Literal->getLocation().isMacroID()){
-    return true;
-  }
-  return CheckLiteral(Literal);
-}
-
-bool FindMagicLits1::VisitFloatingLiteral(FloatingLiteral *Literal) {
-  if(Literal->getLocation().isMacroID()){
-    return true;
-  }
-  return CheckLiteral(Literal);
-}
-
-bool FindMagicLits1::VisitCXXNullPtrLiteralExpr(CXXNullPtrLiteralExpr *Literal){
-  return CheckLiteral(Literal);
-}
-
-bool FindMagicLits1::VisitStringLiteral(StringLiteral *Literal) {
-  return CheckLiteral(Literal);
-}
-
-bool FindMagicLits1::VisitCharacterLiteral(CharacterLiteral *Literal) {
-  constexpr char EscapeSequences[] = {
-      '\b', '\f', '\n', '\r', '\t', '\v', '\\', '\'', '\"', '\?', '\0'
-  };
-  if(std::find(std::begin(EscapeSequences), std::end(EscapeSequences), Literal->getValue()) != std::end(EscapeSequences))
-    return true;
-  return CheckLiteral(Literal);
-}
-
-bool FindMagicLits1::VisitCXXBoolLiteralExpr(CXXBoolLiteralExpr *Literal){
-  return CheckLiteral(Literal);
-}
-
-const std::vector<FullSourceLoc> &FindMagicLits1::getWarnings() const{ 
-  return warnings;
-}
-
-bool FindMagicLits1::diagIgnore(SourceLocation WL){
+bool FindMagicLits::diagIgnore(SourceLocation WL){
   FileID File;
   unsigned int Pos = 0;
   std::tie(File, Pos) =  Context->getSourceManager().getDecomposedSpellingLoc(WL);
@@ -125,14 +74,14 @@ bool FindMagicLits1::diagIgnore(SourceLocation WL){
   return lineHasIgnore(*Buffer, PrevLine);
 }
 
-std::pair<size_t, size_t> FindMagicLits1::getLineStartAndEnd(StringRef Buffer,
+std::pair<size_t, size_t> FindMagicLits::getLineStartAndEnd(StringRef Buffer,
                                                     size_t From) {
   size_t StartPos = Buffer.find_last_of('\n', From) + 1;
   size_t EndPos = std::min(Buffer.find('\n', From), Buffer.size());
   return std::make_pair(StartPos, EndPos);
 }
 
-bool FindMagicLits1::lineHasIgnore(StringRef Buffer, std::pair<size_t, size_t> LineStartAndEnd){
+bool FindMagicLits::lineHasIgnore(StringRef Buffer, std::pair<size_t, size_t> LineStartAndEnd){
   Buffer = Buffer.slice(LineStartAndEnd.first, LineStartAndEnd.second);
   std::string Buffer1 = removeSpace(Buffer);
   llvm::outs() << "Final buffer : \n" << Buffer1;
@@ -142,7 +91,7 @@ bool FindMagicLits1::lineHasIgnore(StringRef Buffer, std::pair<size_t, size_t> L
   return false;
 }
 
-std::string FindMagicLits1::removeSpace(StringRef buffer){
+std::string FindMagicLits::removeSpace(StringRef buffer){
   std::string buf = buffer.str();
   auto end_pos = std::remove(buf.begin(), buf.end(), ' ');
   buf.erase(end_pos,buf.end());

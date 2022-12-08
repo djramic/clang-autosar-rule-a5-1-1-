@@ -1,30 +1,38 @@
-#include "clang/AST/Stmt.h"
-#include "clang/AST/ASTConsumer.h"
-#include "clang/AST/RecursiveASTVisitor.h"
-#include "clang/Analysis/FindMagicLits.h"
-#include "clang/Basic/Diagnostic.h"
-#include "clang/Basic/SourceLocation.h"
-#include "clang/Basic/SourceManager.h"
-#include "clang/Frontend/CompilerInstance.h"
-#include "clang/Frontend/FrontendAction.h"
-#include "clang/Tooling/Tooling.h"
+#include "clang/Frontend/FrontendActions.h"
 #include "clang/Tooling/CommonOptionsParser.h"
-#include "clang/AST/ParentMapContext.h"
-#include "clang/AST/RawCommentList.h"
-#include "string.h"
-#include <algorithm>
+#include "clang/Tooling/Tooling.h"
+#include "llvm/Support/CommandLine.h"
+#include "clang/ASTMatchers/ASTMatchers.h"
+#include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "clang/AST/ASTContext.h"
+#include "clang/Analysis/FindMagicLits.h"
+#include "clang/Frontend/CompilerInstance.h"
 
+using namespace llvm;
 using namespace clang;
 using namespace clang::tooling;
-using namespace llvm;
+using namespace clang::ast_matchers;
+
+StatementMatcher LitMatcher[] = {
+      integerLiteral().bind("IntLiteral"),
+      floatLiteral().bind("FloatLiteral"),
+      cxxNullPtrLiteralExpr().bind("NptLiteral"),
+      stringLiteral().bind("StrLiteral"),
+      characterLiteral().bind("CharLiteral"),
+      cxxBoolLiteral().bind("boolLiteral")
+};
 
 class FindMagicLitsConsumer : public clang::ASTConsumer {
 public:
-  explicit FindMagicLitsConsumer(ASTContext *Context) : Visitor(Context) {}
+  explicit FindMagicLitsConsumer(ASTContext *Context) {}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context){
-    Visitor.TraverseDecl(Context.getTranslationUnitDecl()); 
-    Warnings = Visitor.getWarnings();
+    FindMagicLits Matcher;
+    MatchFinder Finder;
+    for(StatementMatcher LM : LitMatcher)
+      Finder.addMatcher(LM, &Matcher);
+    Finder.matchAST(Context);
+    Warnings = Matcher.getWarnings();
     clang::DiagnosticsEngine &DE = Context.getDiagnostics();
     const auto ID = DE.getCustomDiagID(clang::DiagnosticsEngine::Warning,
                                    "Autosar[A5-1-1]: Use symbolic names instead of "
@@ -36,7 +44,7 @@ public:
     }
  }
 private:
-  FindMagicLits1 Visitor;
+  FindMagicLits Matcher;
   std::vector<FullSourceLoc> Warnings;
 };
 

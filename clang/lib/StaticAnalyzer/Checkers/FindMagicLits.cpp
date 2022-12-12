@@ -12,25 +12,14 @@
 using namespace clang;
 using namespace ento;
 
- StatementMatcher LitMatcher[] = {
-      integerLiteral().bind("IntLiteral"),
-      floatLiteral().bind("FloatLiteral"),
-      cxxNullPtrLiteralExpr().bind("NptLiteral"),
-      stringLiteral().bind("StrLiteral"),
-      characterLiteral().bind("CharLiteral"),
-      cxxBoolLiteral().bind("boolLiteral")
-  };
+
 
 class FindMagicLitsChecker : public Checker<check::ASTCodeBody> {
 public:
   void checkASTCodeBody(const Decl *D, AnalysisManager &Mgr,
                         BugReporter &BR) const {
     ASTContext &Context = Mgr.getAnalysisDeclContext(D)->getASTContext();
-    FindMagicLits Matcher;
-    MatchFinder Finder;
-    for(StatementMatcher LM : LitMatcher)
-      Finder.addMatcher(LM, &Matcher);
-      
+    FindMagicLits Matcher(&Context);
     std::vector<FullSourceLoc> warningsLocs = Matcher.getWarnings();
     for(FullSourceLoc FL : warningsLocs){
       BR.EmitBasicReport(D, this, "Autosar a5-1-1 rule", categories::LogicError,

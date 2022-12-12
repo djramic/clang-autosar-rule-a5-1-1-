@@ -13,25 +13,14 @@ using namespace clang;
 using namespace clang::tooling;
 using namespace clang::ast_matchers;
 
-StatementMatcher LitMatcher[] = {
-      integerLiteral().bind("IntLiteral"),
-      floatLiteral().bind("FloatLiteral"),
-      cxxNullPtrLiteralExpr().bind("NptLiteral"),
-      stringLiteral().bind("StrLiteral"),
-      characterLiteral().bind("CharLiteral"),
-      cxxBoolLiteral().bind("boolLiteral")
-};
+
 
 class FindMagicLitsConsumer : public clang::ASTConsumer {
 public:
   explicit FindMagicLitsConsumer(ASTContext *Context) {}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context){
-    FindMagicLits Matcher;
-    MatchFinder Finder;
-    for(StatementMatcher LM : LitMatcher)
-      Finder.addMatcher(LM, &Matcher);
-    Finder.matchAST(Context);
+    FindMagicLits Matcher(&Context);
     Warnings = Matcher.getWarnings();
     clang::DiagnosticsEngine &DE = Context.getDiagnostics();
     const auto ID = DE.getCustomDiagID(clang::DiagnosticsEngine::Warning,
@@ -44,7 +33,6 @@ public:
     }
  }
 private:
-  FindMagicLits Matcher;
   std::vector<FullSourceLoc> Warnings;
 };
 

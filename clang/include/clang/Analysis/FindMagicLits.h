@@ -19,8 +19,24 @@ using namespace clang::ast_matchers;
 class FindMagicLits : public MatchFinder::MatchCallback {
 public:
 
+  FindMagicLits(ASTContext* Context) : Context(Context) {
+    StatementMatcher LitMatcher[] = {
+      integerLiteral().bind("IntLiteral"),
+      floatLiteral().bind("FloatLiteral"),
+      cxxNullPtrLiteralExpr().bind("NptLiteral"),
+      stringLiteral().bind("StrLiteral"),
+      characterLiteral().bind("CharLiteral"),
+      cxxBoolLiteral().bind("boolLiteral")
+    };
+
+    for(StatementMatcher LM : LitMatcher)
+      Finder.addMatcher(LM, this);
+
+    Finder.matchAST(*Context);
+  }
+
   virtual void run(const MatchFinder::MatchResult &Result) {
-    Context = Result.Context;
+
     if (const IntegerLiteral *IL = Result.Nodes.getNodeAs<clang::IntegerLiteral>("IntLiteral")){
       CheckLiteral(IL);  
     }
@@ -77,6 +93,7 @@ public:
 private:
   std::vector<FullSourceLoc> warnings;
   ASTContext *Context;
+  MatchFinder Finder;
 };
 
 #endif //FIND_MAGIC_LITS_H

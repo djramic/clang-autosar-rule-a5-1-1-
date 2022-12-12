@@ -1435,19 +1435,7 @@ void Sema::ActOnEndOfTranslationUnit() {
     TUScope = nullptr;
 
   if(!Diags.isIgnored(diag::warn_no_magic_lits, SourceLocation())){
-    StatementMatcher LitMatcher[] = {
-      integerLiteral().bind("IntLiteral"),
-      floatLiteral().bind("FloatLiteral"),
-      cxxNullPtrLiteralExpr().bind("NptLiteral"),
-      stringLiteral().bind("StrLiteral"),
-      characterLiteral().bind("CharLiteral"),
-      cxxBoolLiteral().bind("boolLiteral")
-    };
-    FindMagicLits Matcher;
-    MatchFinder Finder;
-    for(StatementMatcher LM : LitMatcher)
-      Finder.addMatcher(LM, &Matcher);
-    Finder.matchAST(Context);
+    FindMagicLits Matcher(&Context);
     std::vector<FullSourceLoc> warningsLocs = Matcher.getWarnings();
     for(FullSourceLoc warn : warningsLocs){
         if(warn.isValid())

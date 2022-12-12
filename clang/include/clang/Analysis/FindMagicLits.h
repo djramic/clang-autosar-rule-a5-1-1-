@@ -63,17 +63,10 @@ public:
     const auto& parents = Context->getParents(*Literal);
     DynTypedNode parent = parents[0];
     if(CheckParents(parent) == non_compliant){
-        if(!diagIgnore(Literal->getBeginLoc())){
-            //warnings.push_back(Context->getFullLoc(Literal->getBeginLoc()));
-    clang::DiagnosticsEngine &DE = Context->getDiagnostics();
-    const auto ID = DE.getCustomDiagID(clang::DiagnosticsEngine::Warning,
-                                   "Autosar[A5-1-1]: Use symbolic names instead of "
-                                   "literal values in code.");
-    auto DB = DE.Report(Literal->getBeginLoc(), ID);
-    auto Range = Context->getSourceManager().getExpansionRange(Literal->getBeginLoc());
-    DB.AddSourceRange(Range);
+      if(!diagIgnore(Literal->getBeginLoc())){
+        warnings.push_back(Context->getFullLoc(Literal->getBeginLoc()));
+      }
     }
-  }
   return true;
   }
 

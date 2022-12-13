@@ -11,10 +11,8 @@
 
 enum return_state {compliant, non_compliant};
 
-using namespace llvm;
-using namespace clang;
-using namespace clang::tooling;
-using namespace clang::ast_matchers;
+namespace clang{
+namespace ast_matchers{
 
 class FindMagicLits : public MatchFinder::MatchCallback {
 public:
@@ -35,7 +33,7 @@ public:
     Finder.matchAST(*Context);
   }
 
-  virtual void run(const MatchFinder::MatchResult &Result) {
+  virtual void run(const ast_matchers::MatchFinder::MatchResult &Result) {
 
     if (const IntegerLiteral *IL = Result.Nodes.getNodeAs<clang::IntegerLiteral>("IntLiteral")){
       CheckLiteral(IL);  
@@ -86,7 +84,10 @@ public:
 private:
   std::vector<FullSourceLoc> warnings;
   ASTContext *Context;
-  MatchFinder Finder;
+  ast_matchers::MatchFinder Finder;
 };
+
+}
+}
 
 #endif //FIND_MAGIC_LITS_H

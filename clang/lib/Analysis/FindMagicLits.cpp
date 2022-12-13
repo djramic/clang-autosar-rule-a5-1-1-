@@ -1,6 +1,9 @@
 #include "clang/Analysis/FindMagicLits.h"
 #include "clang/Basic/Diagnostic.h"
 
+using namespace clang;
+using namespace ast_matchers;
+
 return_state FindMagicLits::CheckParents(DynTypedNode parent){
   const Stmt* ST = parent.get<Stmt>();
   if(!ST){

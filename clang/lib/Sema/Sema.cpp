@@ -54,6 +54,7 @@
 
 using namespace clang;
 using namespace sema;
+using namespace ast_matchers;
 
 SourceLocation Sema::getLocForEndOfToken(SourceLocation Loc, unsigned Offset) {
   return Lexer::getLocForEndOfToken(Loc, Offset, SourceMgr, LangOpts);

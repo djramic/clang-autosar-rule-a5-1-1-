@@ -11,8 +11,7 @@
 
 using namespace clang;
 using namespace ento;
-
-
+using namespace ast_matchers;
 
 class FindMagicLitsChecker : public Checker<check::ASTCodeBody> {
 public:

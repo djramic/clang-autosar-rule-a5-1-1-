@@ -11,9 +11,9 @@
 #include <vector>
 #include <string.h>
 
-enum return_state {compliant, non_compliant};
-
 namespace clang {
+
+enum return_state {compliant, non_compliant};
 
 class FindMagicLits
     : public RecursiveASTVisitor<FindMagicLits> {

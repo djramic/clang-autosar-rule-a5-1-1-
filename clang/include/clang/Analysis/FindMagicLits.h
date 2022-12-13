@@ -1,3 +1,6 @@
+
+#ifndef FIND_MAGIC_LITS_H
+#define FIND_MAGIC_LITS_H
 #include "clang/AST/Stmt.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/AST/ParentMapContext.h"
@@ -8,9 +11,9 @@
 #include <vector>
 #include <string.h>
 
-enum return_state {compliant, non_compliant, manual_check};
-using namespace clang;
+enum return_state {compliant, non_compliant};
 
+namespace clang {
 
 class FindMagicLits
     : public RecursiveASTVisitor<FindMagicLits> {
@@ -52,3 +55,7 @@ private:
   clang::ASTContext* Context;
   std::vector<FullSourceLoc> warnings;
 };
+
+} //namespace clang
+
+#endif //FIND_MAGIC_LITS_H

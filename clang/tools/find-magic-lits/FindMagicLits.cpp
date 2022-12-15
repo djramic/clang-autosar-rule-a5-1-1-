@@ -19,7 +19,7 @@ class FindMagicLitsConsumer : public clang::ASTConsumer {
 public:
   explicit FindMagicLitsConsumer(ASTContext *Context) {}
 
-  virtual void HandleTranslationUnit(clang::ASTContext &Context){
+  virtual void HandleTranslationUnit(clang::ASTContext &Context) override{
     FindMagicLits Matcher(&Context);
     Warnings = Matcher.getWarnings();
     clang::DiagnosticsEngine &DE = Context.getDiagnostics();
@@ -39,7 +39,7 @@ private:
 class FindMagicLitsAction : public clang::ASTFrontendAction {
 public:
   virtual std::unique_ptr<clang::ASTConsumer>
-  CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef InFile) {
+  CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef InFile) override {
     return std::make_unique<FindMagicLitsConsumer>(&Compiler.getASTContext());
   }
 };

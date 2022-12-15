@@ -35,7 +35,7 @@ public:
     Finder.matchAST(*Context);
   }
 
-  virtual void run(const ast_matchers::MatchFinder::MatchResult &Result) {
+  virtual void run(const ast_matchers::MatchFinder::MatchResult &Result) override {
 
     if (const IntegerLiteral *IL = Result.Nodes.getNodeAs<clang::IntegerLiteral>("IntLiteral")){
       CheckLiteral(IL);  

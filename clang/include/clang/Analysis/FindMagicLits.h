@@ -24,7 +24,16 @@ public:
   return_state CheckParents(DynTypedNode parent);
 
   template<typename T> 
-  bool CheckLiteral(T *Literal);
+  bool CheckLiteral(T *Literal){
+    const auto& parents = Context->getParents(*Literal);
+    DynTypedNode parent = parents[0];
+    if(CheckParents(parent) == non_compliant){
+      if(!diagIgnore(Literal->getBeginLoc())){
+        warnings.push_back(Context->getFullLoc(Literal->getBeginLoc()));
+      }
+    }
+    return true;
+  }
 
   bool VisitIntegerLiteral(IntegerLiteral *Literal);
 

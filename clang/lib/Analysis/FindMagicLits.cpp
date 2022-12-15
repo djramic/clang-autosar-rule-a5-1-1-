@@ -63,18 +63,6 @@ return_state FindMagicLits::CheckParents(DynTypedNode parent){
   return compliant;
 }
 
-template<typename T> 
-bool FindMagicLits::CheckLiteral(T *Literal){
-  const auto& parents = Context->getParents(*Literal);
-  DynTypedNode parent = parents[0];
-  if(CheckParents(parent) == non_compliant){
-    if(!diagIgnore(Literal->getBeginLoc())){
-      warnings.push_back(Context->getFullLoc(Literal->getBeginLoc()));
-    }
-  }
-  return true;
-}
-
 bool FindMagicLits::VisitIntegerLiteral(IntegerLiteral* Literal){
   if(Literal->getLocation().isMacroID()){
     return true;

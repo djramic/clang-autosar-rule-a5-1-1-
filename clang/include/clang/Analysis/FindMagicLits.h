@@ -9,10 +9,12 @@
 #include "clang/AST/ASTContext.h"
 #include <vector>
 
-enum return_state {compliant, non_compliant};
+
 
 namespace clang{
 namespace ast_matchers{
+
+enum return_state {compliant, non_compliant};
 
 class FindMagicLits : public MatchFinder::MatchCallback {
 public:
@@ -54,7 +56,6 @@ public:
       CheckLiteral(BL);  
     }
   }
-
 
   template<typename T> 
   bool CheckLiteral(T* Literal){

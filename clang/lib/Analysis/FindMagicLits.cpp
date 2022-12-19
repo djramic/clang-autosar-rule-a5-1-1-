@@ -27,7 +27,8 @@ return_state FindMagicLits::CheckParents(DynTypedNode parent){
   constexpr Stmt::StmtClass compliant_classes[] = {
     Stmt::CXXConstructExprClass,
     Stmt::InitListExprClass,
-    Stmt::CompoundAssignOperatorClass
+    Stmt::CompoundAssignOperatorClass,
+    Stmt::ConstantExprClass
       //
   };
   while(ST){

@@ -78,6 +78,9 @@ bool FindMagicLits::VisitFloatingLiteral(FloatingLiteral *Literal) {
 }
 
 bool FindMagicLits::VisitCXXNullPtrLiteralExpr(CXXNullPtrLiteralExpr *Literal){
+  if(Literal->getLocation().isMacroID()){
+    return true;
+  }
   return CheckLiteral(Literal);
 }
 
@@ -86,6 +89,9 @@ bool FindMagicLits::VisitStringLiteral(StringLiteral *Literal) {
 }
 
 bool FindMagicLits::VisitCharacterLiteral(CharacterLiteral *Literal) {
+  if(Literal->getLocation().isMacroID()){
+    return true;
+  }
   constexpr char EscapeSequences[] = {
       '\b', '\f', '\n', '\r', '\t', '\v', '\\', '\'', '\"', '\?', '\0'
   };
@@ -95,6 +101,9 @@ bool FindMagicLits::VisitCharacterLiteral(CharacterLiteral *Literal) {
 }
 
 bool FindMagicLits::VisitCXXBoolLiteralExpr(CXXBoolLiteralExpr *Literal){
+  if(Literal->getLocation().isMacroID()){
+    return true;
+  }
   return CheckLiteral(Literal);
 }
 

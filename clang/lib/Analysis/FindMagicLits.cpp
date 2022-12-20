@@ -88,7 +88,6 @@ std::pair<size_t, size_t> FindMagicLits::getLineStartAndEnd(StringRef Buffer,
 bool FindMagicLits::lineHasIgnore(StringRef Buffer, std::pair<size_t, size_t> LineStartAndEnd){
   Buffer = Buffer.slice(LineStartAndEnd.first, LineStartAndEnd.second);
   std::string Buffer1 = removeSpace(Buffer);
-  llvm::outs() << "Final buffer : \n" << Buffer1;
   static constexpr llvm::StringLiteral IGNORE = "//ignore:autosar[a5-1-1]";
   if(Buffer1.find(IGNORE)!= StringRef::npos)
     return true;

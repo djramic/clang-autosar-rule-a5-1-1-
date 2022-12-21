@@ -21,12 +21,12 @@ public:
 
   FindMagicLits(ASTContext* Context) : Context(Context) {
     StatementMatcher LitMatcher[] = {
-      integerLiteral().bind("IntLiteral"),
-      floatLiteral().bind("FloatLiteral"),
-      cxxNullPtrLiteralExpr().bind("NptLiteral"),
-      stringLiteral().bind("StrLiteral"),
-      characterLiteral().bind("CharLiteral"),
-      cxxBoolLiteral().bind("boolLiteral")
+      traverse(TK_IgnoreUnlessSpelledInSource,integerLiteral()).bind("IntLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,floatLiteral()).bind("FloatLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,cxxNullPtrLiteralExpr()).bind("NptLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,stringLiteral()).bind("StrLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,characterLiteral()).bind("CharLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,cxxBoolLiteral()).bind("boolLiteral")
     };
 
     for(StatementMatcher LM : LitMatcher)
@@ -38,8 +38,9 @@ public:
   virtual void run(const ast_matchers::MatchFinder::MatchResult &Result) override {
 
     if (const IntegerLiteral *IL = Result.Nodes.getNodeAs<clang::IntegerLiteral>("IntLiteral")){
-      if(!IL->getLocation().isMacroID())
+      if(!IL->getLocation().isMacroID()){
         CheckLiteral(IL);  
+      }
     }
     if (const FloatingLiteral *FL = Result.Nodes.getNodeAs<clang::FloatingLiteral>("FloatLiteral")){
       if(!FL->getLocation().isMacroID())
@@ -53,8 +54,9 @@ public:
         CheckLiteral(SL);    
     }
      if (const CharacterLiteral *CL = Result.Nodes.getNodeAs<clang::CharacterLiteral>("CharLiteral")){
-      if(!CL->getLocation().isMacroID())
+      if(!CL->getLocation().isMacroID()){
         CheckLiteral(CL);    
+      }
     }
      if (const CXXBoolLiteralExpr *BL = Result.Nodes.getNodeAs<clang::CXXBoolLiteralExpr>("boolLiteral")){
       if(!BL->getLocation().isMacroID())

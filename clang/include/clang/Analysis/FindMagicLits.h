@@ -55,7 +55,11 @@ public:
     }
      if (const CharacterLiteral *CL = Result.Nodes.getNodeAs<clang::CharacterLiteral>("CharLiteral")){
       if(!CL->getLocation().isMacroID()){
-        CheckLiteral(CL);    
+        constexpr char EscapeSequences[] = {
+      '\b', '\f', '\n', '\r', '\t', '\v', '\\', '\'', '\"', '\?', '\0'
+        };
+        if(std::find(std::begin(EscapeSequences), std::end(EscapeSequences), CL->getValue()) == std::end(EscapeSequences))
+          CheckLiteral(CL);    
       }
     }
      if (const CXXBoolLiteralExpr *BL = Result.Nodes.getNodeAs<clang::CXXBoolLiteralExpr>("boolLiteral")){

@@ -29,7 +29,6 @@ return_state FindMagicLits::CheckParents(DynTypedNode parent){
     Stmt::CXXConstructExprClass,
     Stmt::InitListExprClass,
     Stmt::CompoundAssignOperatorClass,
-    Stmt::ConstantExprClass
       //
   };
   while(ST){

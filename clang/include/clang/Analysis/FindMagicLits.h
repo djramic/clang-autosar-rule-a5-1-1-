@@ -7,7 +7,6 @@
 #include "clang/Basic/SourceManager.h"
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/TargetInfo.h"
-
 #include <vector>
 #include <string.h>
 

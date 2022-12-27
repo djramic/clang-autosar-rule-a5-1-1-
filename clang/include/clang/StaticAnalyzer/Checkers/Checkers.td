@@ -497,7 +497,6 @@ def CStringUninitializedRead : Checker<"UninitializedRead">,
 } // end "alpha.unix.cstring"
 
 let ParentPackage = Autosar in {
-  //using AST visitor
   def FindMagicLitsChecker : Checker<"FindMagicLits">,
   HelpText<"Autosar[A5-1-1]: Literal values shall not be used apart from "
            "type initialization, otherwise symbolic names shall be used instead.">,

@@ -20,24 +20,22 @@
 
 using namespace llvm;
 using namespace clang;
+using namespace clang::ast_matchers;
 
 class FindMagicLitsConsumer : public clang::ASTConsumer {
 public:
-  explicit FindMagicLitsConsumer(ASTContext *Context, std::vector<int> ExpWarnings ) : Visitor(Context), ExpWarningsLines(ExpWarnings) {}
+  explicit FindMagicLitsConsumer(ASTContext *Context, std::vector<int> ExpWarnings ) : ExpWarningsLines(ExpWarnings) {}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context){
-    
-    Visitor.TraverseDecl(Context.getTranslationUnitDecl()); 
-    Warnings = Visitor.getWarnings();
+    FindMagicLits Matcher(&Context);
+    Warnings = Matcher.getWarnings();
    
     for(FullSourceLoc WL: Warnings){
-      llvm::outs()<< WL.getSpellingLineNumber();
       WarningsLines.push_back(WL.getSpellingLineNumber());
     }
      EXPECT_TRUE(WarningsLines == ExpWarningsLines);
  }
 private:
-  FindMagicLits1 Visitor;
   std::vector<FullSourceLoc> Warnings;
   std::vector<int>WarningsLines;
   std::vector<int>ExpWarningsLines;

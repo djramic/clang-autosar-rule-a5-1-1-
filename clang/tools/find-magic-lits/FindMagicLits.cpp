@@ -13,6 +13,8 @@ using namespace clang;
 using namespace clang::tooling;
 using namespace clang::ast_matchers;
 
+static llvm::cl::OptionCategory FindMagicLitsOpts("find-magic-lits options");
+bool skipHeaderOpt = false;
 
 
 class FindMagicLitsConsumer : public clang::ASTConsumer {
@@ -25,13 +27,18 @@ public:
     clang::DiagnosticsEngine &DE = Context.getDiagnostics();
     const auto ID = DE.getCustomDiagID(clang::DiagnosticsEngine::Warning,
                                    "Autosar[A5-1-1]: Use symbolic names instead of "
-                                   "literal values in code.");
+                                   "literal values in code.");                            
     for(FullSourceLoc WL : Warnings){
+      if(skipHeaderOpt){
+        if(!Context.getSourceManager().isInMainFile(WL)){
+          continue;
+        }
+      }
       auto DB = DE.Report(WL, ID);
       auto Range = Context.getSourceManager().getExpansionRange(WL);
-      DB.AddSourceRange(Range);
-    }
- }
+      DB.AddSourceRange(Range);   
+    }     
+  }
 private:
   std::vector<FullSourceLoc> Warnings;
 };
@@ -44,14 +51,18 @@ public:
   }
 };
 
-static llvm::cl::OptionCategory MyToolCategory("my-tool options");
-
 int main(int argc, const char **argv) {
-  auto ExpectedParser = tooling::CommonOptionsParser::create(argc, argv, MyToolCategory);
+  cl::opt<bool> skipHeader("skipHeader",
+                  cl::desc("Skip header files"),
+                  cl::cat(FindMagicLitsOpts));
+
+  auto ExpectedParser = tooling::CommonOptionsParser::create(argc, argv, FindMagicLitsOpts);
   if (!ExpectedParser) {
     llvm::errs() << ExpectedParser.takeError();
     return 1;
   }
+
+  skipHeaderOpt = skipHeader.getValue();
   
   tooling::CommonOptionsParser& OptionsParser = ExpectedParser.get();
   tooling::ClangTool Tool(OptionsParser.getCompilations(),

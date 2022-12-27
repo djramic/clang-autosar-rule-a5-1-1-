@@ -37,7 +37,7 @@ public:
      EXPECT_TRUE(WarningsLines == ExpWarningsLines);
  }
 private:
-  FindMagicLits1 Visitor;
+  FindMagicLits Visitor;
   std::vector<FullSourceLoc> Warnings;
   std::vector<int>WarningsLines;
   std::vector<int>ExpWarningsLines;

@@ -5,8 +5,9 @@ using namespace clang;
 
 bool FindMagicLits::CheckParents(DynTypedNode parent){
   const Stmt* ST = parent.get<Stmt>();
-  if(!ST)
+  if(!ST){
     return compliant;
+  }
   constexpr Stmt::StmtClass non_compliant_classes[] = {
     Stmt::CallExprClass,
     Stmt::ForStmtClass,

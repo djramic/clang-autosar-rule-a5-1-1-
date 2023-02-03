@@ -17,12 +17,12 @@ using namespace clang::tooling;
 using namespace clang::ast_matchers;
 
 StatementMatcher LitMatcher[] = {
-  integerLiteral().bind("IntLiteral"),
-  floatLiteral().bind("FloatLiteral"),
-  cxxNullPtrLiteralExpr().bind("NptLiteral"),
-  stringLiteral().bind("StrLiteral"),
-  characterLiteral().bind("CharLiteral"),
-  cxxBoolLiteral().bind("boolLiteral")
+  traverse(TK_IgnoreUnlessSpelledInSource,integerLiteral()).bind("IntLiteral"),
+  traverse(TK_IgnoreUnlessSpelledInSource,floatLiteral()).bind("FloatLiteral"),
+  traverse(TK_IgnoreUnlessSpelledInSource,cxxNullPtrLiteralExpr()).bind("NptLiteral"),
+  traverse(TK_IgnoreUnlessSpelledInSource,stringLiteral()).bind("StrLiteral"),
+  traverse(TK_IgnoreUnlessSpelledInSource,characterLiteral()).bind("CharLiteral"),
+  traverse(TK_IgnoreUnlessSpelledInSource,cxxBoolLiteral()).bind("boolLiteral")
 };
 
 class MagicLitsMch : public MatchFinder::MatchCallback, public FindMagicLits{
@@ -30,22 +30,36 @@ public:
   explicit MagicLitsMch(ASTContext *Context) : FindMagicLits(Context){}
   virtual void run(const MatchFinder::MatchResult &Result) override{
     if (const IntegerLiteral *IL = Result.Nodes.getNodeAs<clang::IntegerLiteral>("IntLiteral")){
-      CheckLiteral(IL);  
+      if(!IL->getLocation().isMacroID()){
+        CheckLiteral(IL);  
+      }
     }
     if (const FloatingLiteral *FL = Result.Nodes.getNodeAs<clang::FloatingLiteral>("FloatLiteral")){
-      CheckLiteral(FL);  
+      if(!FL->getLocation().isMacroID()){
+        CheckLiteral(FL);  
+      }
     }
      if (const CXXNullPtrLiteralExpr *NPL = Result.Nodes.getNodeAs<clang::CXXNullPtrLiteralExpr>("NptLiteral")){
-      CheckLiteral(NPL);  
+      if(!NPL->getLocation().isMacroID()){
+        CheckLiteral(NPL);  
+      }
     }
      if (const clang::StringLiteral *SL = Result.Nodes.getNodeAs<clang::StringLiteral>("StrLiteral")){
       CheckLiteral(SL);  
     }
      if (const CharacterLiteral *CL = Result.Nodes.getNodeAs<clang::CharacterLiteral>("CharLiteral")){
-      CheckLiteral(CL);  
+      if(!CL->getLocation().isMacroID()){
+        constexpr char EscapeSequences[] = {
+          '\b', '\f', '\n', '\r', '\t', '\v', '\\', '\'', '\"', '\?', '\0'
+        };
+      if(std::find(std::begin(EscapeSequences), std::end(EscapeSequences), CL->getValue()) == std::end(EscapeSequences))
+        CheckLiteral(CL); 
+      } 
     }
      if (const CXXBoolLiteralExpr *BL = Result.Nodes.getNodeAs<clang::CXXBoolLiteralExpr>("boolLiteral")){
-      CheckLiteral(BL);  
+      if(!BL->getLocation().isMacroID()){
+        CheckLiteral(BL); 
+      } 
     }
   }
 };

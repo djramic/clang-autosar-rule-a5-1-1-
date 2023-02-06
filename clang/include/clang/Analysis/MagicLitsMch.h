@@ -16,18 +16,23 @@ using namespace clang;
 using namespace clang::tooling;
 using namespace clang::ast_matchers;
 
-StatementMatcher LitMatcher[] = {
-  traverse(TK_IgnoreUnlessSpelledInSource,integerLiteral()).bind("IntLiteral"),
-  traverse(TK_IgnoreUnlessSpelledInSource,floatLiteral()).bind("FloatLiteral"),
-  traverse(TK_IgnoreUnlessSpelledInSource,cxxNullPtrLiteralExpr()).bind("NptLiteral"),
-  traverse(TK_IgnoreUnlessSpelledInSource,stringLiteral()).bind("StrLiteral"),
-  traverse(TK_IgnoreUnlessSpelledInSource,characterLiteral()).bind("CharLiteral"),
-  traverse(TK_IgnoreUnlessSpelledInSource,cxxBoolLiteral()).bind("boolLiteral")
-};
 
 class MagicLitsMch : public MatchFinder::MatchCallback, public FindMagicLits{
 public:
-  explicit MagicLitsMch(ASTContext *Context) : FindMagicLits(Context){}
+  explicit MagicLitsMch(ASTContext *Context) : FindMagicLits(Context){
+    StatementMatcher LitMatcher[] = {
+      traverse(TK_IgnoreUnlessSpelledInSource,integerLiteral()).bind("IntLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,floatLiteral()).bind("FloatLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,cxxNullPtrLiteralExpr()).bind("NptLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,stringLiteral()).bind("StrLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,characterLiteral()).bind("CharLiteral"),
+      traverse(TK_IgnoreUnlessSpelledInSource,cxxBoolLiteral()).bind("boolLiteral")
+    };
+    for(StatementMatcher LM : LitMatcher)
+      Finder.addMatcher(LM, this);
+    Finder.matchAST(*Context);  
+  }
+
   virtual void run(const MatchFinder::MatchResult &Result) override{
     if (const IntegerLiteral *IL = Result.Nodes.getNodeAs<clang::IntegerLiteral>("IntLiteral")){
       if(!IL->getLocation().isMacroID()){
@@ -62,6 +67,8 @@ public:
       } 
     }
   }
+private:
+  ast_matchers::MatchFinder Finder;
 };
 
 #endif //MAGIC_LITS_MCH

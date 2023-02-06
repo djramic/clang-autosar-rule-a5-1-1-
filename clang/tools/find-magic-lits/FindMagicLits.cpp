@@ -30,10 +30,6 @@ public:
   virtual void HandleTranslationUnit(clang::ASTContext &Context){
     if(useMchOpt){
       MagicLitsMch Matcher(&Context);
-      MatchFinder Finder;
-      for(StatementMatcher LM : LitMatcher)
-        Finder.addMatcher(LM, &Matcher);
-      Finder.matchAST(Context);
       Warnings = Matcher.getWarnings();
     }
     else{

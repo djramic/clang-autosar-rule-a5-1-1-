@@ -17,7 +17,9 @@ using namespace clang;
 class MagicLitsVisitor
     : public RecursiveASTVisitor<MagicLitsVisitor>, public FindMagicLits {
 public:
-  explicit MagicLitsVisitor(clang::ASTContext *Context) : FindMagicLits(Context){}
+  explicit MagicLitsVisitor(clang::ASTContext *Context) : FindMagicLits(Context){
+    TraverseDecl(Context->getTranslationUnitDecl());
+  }
 
   bool VisitIntegerLiteral(IntegerLiteral *Literal){
     if(Literal->getLocation().isMacroID()){

@@ -21,6 +21,7 @@ using namespace llvm;
 
 static llvm::cl::OptionCategory FindMagicLitsOpts("find-magic-lits options");
 bool useMchOpt = false;
+bool skipHeaderOpt = false;
 
 class FindMagicLitsConsumer : public clang::ASTConsumer {
 public:
@@ -45,6 +46,11 @@ public:
                                    "Autosar[A5-1-1]: Use symbolic names instead of "
                                    "literal values in code.");
     for(FullSourceLoc WL : Warnings){
+      if(skipHeaderOpt){
+        if(!Context.getSourceManager().isInMainFile(WL)){
+          continue;
+        }
+      }
       auto DB = DE.Report(WL, ID);
       auto Range = Context.getSourceManager().getExpansionRange(WL);
       DB.AddSourceRange(Range);
@@ -66,6 +72,9 @@ int main(int argc, const char **argv) {
   cl::opt<bool> useMatcher("useMatcher",
                   cl::desc("Use matcher to search literals over the AST"),
                   cl::cat(FindMagicLitsOpts));
+  cl::opt<bool> skipHeader("skipHeader",
+                  cl::desc("Skip header files"),
+                  cl::cat(FindMagicLitsOpts));
                   
   auto ExpectedParser = tooling::CommonOptionsParser::create(argc, argv, FindMagicLitsOpts);
   if (!ExpectedParser) {
@@ -74,6 +83,7 @@ int main(int argc, const char **argv) {
   }
 
   useMchOpt =  useMatcher.getValue();
+  skipHeaderOpt = skipHeader.getValue();
 
   tooling::CommonOptionsParser& OptionsParser = ExpectedParser.get();
   tooling::ClangTool Tool(OptionsParser.getCompilations(),

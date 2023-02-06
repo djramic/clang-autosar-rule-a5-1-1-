@@ -33,8 +33,7 @@ public:
       Warnings = Matcher.getWarnings();
     }
     else{
-      MagicLitsVisitor Visitor(&Context);
-      Visitor.TraverseDecl(Context.getTranslationUnitDecl()); 
+      MagicLitsVisitor Visitor(&Context);      
       Warnings = Visitor.getWarnings();
     }
     clang::DiagnosticsEngine &DE = Context.getDiagnostics();
